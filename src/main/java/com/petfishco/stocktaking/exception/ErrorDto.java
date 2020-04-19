@@ -3,11 +3,13 @@ package com.petfishco.stocktaking.exception;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class ErrorDto {
-    private String errorMessage;
+    private List<String> errorMessages;
     private int status;
     private String error;
-    private String timestamp;
+    private Long timestamp;
 }

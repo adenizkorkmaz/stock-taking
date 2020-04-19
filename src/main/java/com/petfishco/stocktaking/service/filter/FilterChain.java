@@ -23,8 +23,8 @@ public class FilterChain {
 
     public List<Predicate<Aquarium>> getPredicateList(Fish fish) {
         return filterList.stream()
-                    .sorted(Comparator.comparing(BaseFilter::getOrder))
-                    .peek(baseFilter -> baseFilter.setFish(fish))
-                    .collect(Collectors.toList());
+                .sorted(Comparator.comparing(BaseFilter::getOrder))
+                .peek(baseFilter -> baseFilter.setFish(fish))
+                .collect(Collectors.toList());
     }
 }

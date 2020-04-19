@@ -1,8 +1,9 @@
 package com.petfishco.stocktaking.service;
 
+import com.petfishco.stocktaking.exception.BadRequestException;
+import com.petfishco.stocktaking.exception.NotFoundException;
 import com.petfishco.stocktaking.model.Aquarium;
 import com.petfishco.stocktaking.model.Fish;
-import com.petfishco.stocktaking.model.Species;
 import com.petfishco.stocktaking.model.dto.FishCreateDto;
 import com.petfishco.stocktaking.model.dto.FishUpdateDto;
 import com.petfishco.stocktaking.repository.FishRepository;
@@ -27,15 +28,17 @@ public class FishService {
 
     @Transactional
     public Fish create(@Valid FishCreateDto fishCreateDto) {
-        Fish fish = convertFish(fishCreateDto);
+        Fish fish = Fish.convertFrom(fishCreateDto);
         Iterable<Aquarium> allAquariums = aquariumService.findAll();
 
         Aquarium aquarium = StreamSupport.stream(allAquariums.spliterator(), false)
                 .filter(filterChain.getReducedPredicate(fish))
-                .findFirst().orElseThrow(() -> new RuntimeException("No proper aquarium found"));
+                .findFirst().orElseThrow(() -> new BadRequestException("error.message.noProperAquariumFound"));
 
         aquarium.addFish(fish);
-        return fishRepository.save(fish);
+        Fish save = fishRepository.save(fish);
+        log.info("Fish created with fishId: " + save.getId() + ", aquariumId: " + save.getAquarium().getId());
+        return save;
     }
 
 
@@ -44,6 +47,7 @@ public class FishService {
         Fish fish = findBy(id);
         Aquarium previousAquarium = fish.getAquarium();
         if (fishUpdateDto.getAquariumId().equals(previousAquarium.getId())) {
+            log.info("Fish is not updated. AquariumId is the same with existing one.");
             return fish;
         }
 
@@ -51,26 +55,21 @@ public class FishService {
 
         for (Predicate<Aquarium> aquariumPredicate : filterChain.getPredicateList(fish)) {
             if (!aquariumPredicate.test(aquarium)) {
-                throw new RuntimeException("The aquarium is not proper for this fish. " + ((BaseFilter) aquariumPredicate).getErrorMessage());
+                log.error("Fish cannot be updated." + ((BaseFilter) aquariumPredicate).getErrorMessage());
+                throw new BadRequestException(((BaseFilter) aquariumPredicate).getErrorMessage());
             }
         }
 
         previousAquarium.removeFish(fish);
         aquarium.addFish(fish);
-        return fishRepository.save(fish);
-    }
-
-    private Fish convertFish(@Valid FishCreateDto fishCreateDto) {
-        Fish fish = new Fish();
-        fish.setColor(fishCreateDto.getColor());
-        fish.setNumberOfFins(fishCreateDto.getNumberOfFins());
-        fish.setSpecies(Species.valueOf(fishCreateDto.getSpecies()));
-        return fish;
+        Fish save = fishRepository.save(fish);
+        log.info("Fish updated with fishId: " + save.getId() + ", aquariumId: " + save.getAquarium().getId());
+        return save;
     }
 
 
     public Fish findBy(Integer id) {
         return fishRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Fish not found"));
+                .orElseThrow(() -> new NotFoundException("error.message.fishNotFound", id));
     }
 }
