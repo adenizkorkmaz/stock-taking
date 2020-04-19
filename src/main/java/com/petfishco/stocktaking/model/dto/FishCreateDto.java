@@ -7,7 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class FishRequestDto {
+public class FishCreateDto {
 
     @NotNull
     @ValueOfEnum(enumClass = Species.class,
@@ -20,6 +20,7 @@ public class FishRequestDto {
 
     @NotNull
     private String color;
+
 }
 
 

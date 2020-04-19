@@ -1,5 +1,6 @@
 package com.petfishco.stocktaking.assembler;
 
+import com.petfishco.stocktaking.controller.AquariumController;
 import com.petfishco.stocktaking.controller.FishController;
 import com.petfishco.stocktaking.model.Fish;
 import com.petfishco.stocktaking.model.dto.AquariumResponseDto;
@@ -26,6 +27,7 @@ public class FishDtoAssembler extends RepresentationModelAssemblerSupport<Fish, 
         BeanUtils.copyProperties(fish.getAquarium(), aquariumResponseDto);
         fishResponseDto.setAquarium(aquariumResponseDto);
         fishResponseDto.add(linkTo(methodOn(FishController.class).findById(fishResponseDto.getId())).withSelfRel());
+        aquariumResponseDto.add(linkTo(methodOn(AquariumController.class).findById(aquariumResponseDto.getId())).withSelfRel());
         return fishResponseDto;
     }
 

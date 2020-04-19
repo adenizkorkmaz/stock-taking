@@ -16,12 +16,15 @@ public class FilterChain {
 
     private final List<BaseFilter> filterList;
 
-    public Predicate<Aquarium> getPredicates(Fish fish) {
-        List<Predicate<Aquarium>> collect = filterList.stream()
-                .sorted(Comparator.comparing(BaseFilter::getOrder))
-                .peek(baseFilter -> baseFilter.setFish(fish))
-                .collect(Collectors.toList());
-
+    public Predicate<Aquarium> getReducedPredicate(Fish fish) {
+        List<Predicate<Aquarium>> collect = getPredicateList(fish);
         return collect.stream().reduce(p -> true, Predicate::and);
+    }
+
+    public List<Predicate<Aquarium>> getPredicateList(Fish fish) {
+        return filterList.stream()
+                    .sorted(Comparator.comparing(BaseFilter::getOrder))
+                    .peek(baseFilter -> baseFilter.setFish(fish))
+                    .collect(Collectors.toList());
     }
 }

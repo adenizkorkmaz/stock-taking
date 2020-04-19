@@ -2,8 +2,9 @@ package com.petfishco.stocktaking.controller;
 
 import com.petfishco.stocktaking.assembler.FishDtoAssembler;
 import com.petfishco.stocktaking.model.Fish;
-import com.petfishco.stocktaking.model.dto.FishRequestDto;
+import com.petfishco.stocktaking.model.dto.FishCreateDto;
 import com.petfishco.stocktaking.model.dto.FishResponseDto;
+import com.petfishco.stocktaking.model.dto.FishUpdateDto;
 import com.petfishco.stocktaking.service.FishService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,16 @@ public class FishController {
     private final FishDtoAssembler fishDtoAssembler;
 
     @PostMapping
-    public ResponseEntity<FishResponseDto> createNewGame(@Valid @RequestBody FishRequestDto fishRequestDto) {
-        Fish fish = fishService.create(fishRequestDto);
+    public ResponseEntity<FishResponseDto> createFish(@Valid @RequestBody FishCreateDto fishCreateDto) {
+        Fish fish = fishService.create(fishCreateDto);
         return new ResponseEntity<>(fishDtoAssembler.toModel(fish), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<FishResponseDto> updateFish(@PathVariable("id") Integer id,
+                                                      @Valid @RequestBody FishUpdateDto fishUpdateDto) {
+        Fish fish = fishService.update(fishUpdateDto, id);
+        return new ResponseEntity<>(fishDtoAssembler.toModel(fish), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
