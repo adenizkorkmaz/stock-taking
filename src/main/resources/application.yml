@@ -1,7 +1,3 @@
-app:
-  game:
-    pitCountPerPlayer: 6
-    stoneCountPerPit: 6
 spring:
   hateoas:
     use-hal-as-default-json-media-type: false
