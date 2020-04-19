@@ -8,9 +8,7 @@ import com.petfishco.stocktaking.model.dto.FishUpdateDto;
 import com.petfishco.stocktaking.service.FishService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,16 +30,18 @@ public class FishController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FishResponseDto> updateFish(@PathVariable("id") Integer id,
-                                                      @Valid @RequestBody FishUpdateDto fishUpdateDto) {
+    @ResponseStatus(HttpStatus.OK)
+    public FishResponseDto updateFish(@PathVariable("id") Integer id,
+                                      @Valid @RequestBody FishUpdateDto fishUpdateDto) {
         Fish fish = fishService.update(fishUpdateDto, id);
-        return new ResponseEntity<>(fishDtoAssembler.toModel(fish), HttpStatus.OK);
+        return fishDtoAssembler.toModel(fish);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FishResponseDto> findById(@PathVariable("id") Integer id) {
+    @ResponseStatus(HttpStatus.OK)
+    public FishResponseDto findById(@PathVariable("id") Integer id) {
         Fish fish = fishService.findBy(id);
-        return new ResponseEntity<>(fishDtoAssembler.toModel(fish), HttpStatus.OK);
+        return fishDtoAssembler.toModel(fish);
     }
 
 }

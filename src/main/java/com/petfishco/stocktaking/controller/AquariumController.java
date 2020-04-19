@@ -8,11 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/aquariums")
@@ -23,14 +19,16 @@ public class AquariumController {
     private final AquariumDtoAssembler aquariumDtoAssembler;
 
     @GetMapping
-    public ResponseEntity<CollectionModel<AquariumResponseDto>> findAll() {
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<AquariumResponseDto> findAll() {
         Iterable<Aquarium> all = aquariumService.findAll();
-        return new ResponseEntity<>(aquariumDtoAssembler.toCollectionModel(all), HttpStatus.OK);
+        return aquariumDtoAssembler.toCollectionModel(all);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AquariumResponseDto> findById(@PathVariable("id") Integer id) {
+    @ResponseStatus(HttpStatus.OK)
+    public AquariumResponseDto findById(@PathVariable("id") Integer id) {
         Aquarium aquarium = aquariumService.findBy(id);
-        return new ResponseEntity<>(aquariumDtoAssembler.toModel(aquarium), HttpStatus.OK);
+        return aquariumDtoAssembler.toModel(aquarium);
     }
 }
