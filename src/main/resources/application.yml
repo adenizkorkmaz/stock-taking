@@ -1,0 +1,14 @@
+app:
+  game:
+    pitCountPerPlayer: 6
+    stoneCountPerPit: 6
+spring:
+  hateoas:
+    use-hal-as-default-json-media-type: false
+  jpa:
+    hibernate:
+      ddl-auto: create
+  h2:
+    console:
+      enabled: true
+      path: /h2
