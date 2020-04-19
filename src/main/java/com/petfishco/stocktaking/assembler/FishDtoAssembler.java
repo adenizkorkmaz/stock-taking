@@ -6,7 +6,6 @@ import com.petfishco.stocktaking.model.Fish;
 import com.petfishco.stocktaking.model.dto.AquariumResponseDto;
 import com.petfishco.stocktaking.model.dto.FishResponseDto;
 import org.springframework.beans.BeanUtils;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -22,18 +21,16 @@ public class FishDtoAssembler extends RepresentationModelAssemblerSupport<Fish, 
     @Override
     public FishResponseDto toModel(Fish fish) {
         FishResponseDto fishResponseDto = new FishResponseDto();
-        AquariumResponseDto aquariumResponseDto = new AquariumResponseDto();
         BeanUtils.copyProperties(fish, fishResponseDto);
-        BeanUtils.copyProperties(fish.getAquarium(), aquariumResponseDto);
-        fishResponseDto.setAquarium(aquariumResponseDto);
+        fishResponseDto.setAquarium(getAquariumResponseDto(fish));
         fishResponseDto.add(linkTo(methodOn(FishController.class).findById(fishResponseDto.getId())).withSelfRel());
-        aquariumResponseDto.add(linkTo(methodOn(AquariumController.class).findById(aquariumResponseDto.getId())).withSelfRel());
         return fishResponseDto;
     }
 
-    public CollectionModel<FishResponseDto> toCollectionModel(Iterable<? extends Fish> entities, Integer aquariumId) {
-        CollectionModel<FishResponseDto> fishResponseDtos = super.toCollectionModel(entities);
-        fishResponseDtos.add(linkTo(methodOn(FishController.class).findByAquariumId(aquariumId)).withSelfRel());
-        return fishResponseDtos;
+    private AquariumResponseDto getAquariumResponseDto(Fish fish) {
+        AquariumResponseDto aquariumResponseDto = new AquariumResponseDto();
+        BeanUtils.copyProperties(fish.getAquarium(), aquariumResponseDto);
+        aquariumResponseDto.add(linkTo(methodOn(AquariumController.class).findById(aquariumResponseDto.getId())).withSelfRel());
+        return aquariumResponseDto;
     }
 }

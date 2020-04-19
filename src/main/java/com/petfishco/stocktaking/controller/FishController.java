@@ -25,9 +25,10 @@ public class FishController {
     private final FishDtoAssembler fishDtoAssembler;
 
     @PostMapping
-    public ResponseEntity<FishResponseDto> createFish(@Valid @RequestBody FishCreateDto fishCreateDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public FishResponseDto createFish(@Valid @RequestBody FishCreateDto fishCreateDto) {
         Fish fish = fishService.create(fishCreateDto);
-        return new ResponseEntity<>(fishDtoAssembler.toModel(fish), HttpStatus.CREATED);
+        return fishDtoAssembler.toModel(fish);
     }
 
     @PutMapping("/{id}")
@@ -43,9 +44,4 @@ public class FishController {
         return new ResponseEntity<>(fishDtoAssembler.toModel(fish), HttpStatus.OK);
     }
 
-    @GetMapping("/aquarium/{aquariumId}")
-    public ResponseEntity<CollectionModel<FishResponseDto>> findByAquariumId(@PathVariable("aquariumId") Integer aquariumId) {
-        Iterable<Fish> fishIterable = fishService.findByAquarium(aquariumId);
-        return new ResponseEntity<>(fishDtoAssembler.toCollectionModel(fishIterable, aquariumId), HttpStatus.OK);
-    }
 }

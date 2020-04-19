@@ -5,8 +5,8 @@ import com.petfishco.stocktaking.model.Fish;
 import com.petfishco.stocktaking.model.Species;
 import com.petfishco.stocktaking.model.dto.FishCreateDto;
 import com.petfishco.stocktaking.model.dto.FishUpdateDto;
-import com.petfishco.stocktaking.repository.AquariumRepository;
 import com.petfishco.stocktaking.repository.FishRepository;
+import com.petfishco.stocktaking.service.filter.BaseFilter;
 import com.petfishco.stocktaking.service.filter.FilterChain;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +21,14 @@ import java.util.stream.StreamSupport;
 @Service
 @AllArgsConstructor
 public class FishService {
-    private final AquariumRepository aquariumRepository;
+    private final AquariumService aquariumService;
     private final FishRepository fishRepository;
     private final FilterChain filterChain;
 
     @Transactional
     public Fish create(@Valid FishCreateDto fishCreateDto) {
         Fish fish = convertFish(fishCreateDto);
-        Iterable<Aquarium> allAquariums = aquariumRepository.findAll();
+        Iterable<Aquarium> allAquariums = aquariumService.findAll();
 
         Aquarium aquarium = StreamSupport.stream(allAquariums.spliterator(), false)
                 .filter(filterChain.getReducedPredicate(fish))
@@ -38,35 +38,27 @@ public class FishService {
         return fishRepository.save(fish);
     }
 
-    public Fish update(@Valid FishUpdateDto fishUpdateDto, Integer id) {
-        Fish fish = fishRepository.findById(id).orElseThrow(() -> new RuntimeException("Fish not found"));
 
-        if (fishUpdateDto.isAllFieldsNull()) {
+    @Transactional
+    public Fish update(@Valid FishUpdateDto fishUpdateDto, Integer id) {
+        Fish fish = findBy(id);
+        Aquarium previousAquarium = fish.getAquarium();
+        if (fishUpdateDto.getAquariumId().equals(previousAquarium.getId())) {
             return fish;
         }
-        Aquarium aquarium = fish.getAquarium();
-        if (fishUpdateDto.getAquariumId() != null && !aquarium.getId().equals(fishUpdateDto.getAquariumId())) {
-            aquarium = aquariumRepository.findById(fishUpdateDto.getAquariumId())
-                    .orElseThrow(() -> new RuntimeException("Aquarium not found"));
-        }
-        if (fishUpdateDto.getNumberOfFins() != 0) {
-            fish.setNumberOfFins(fishUpdateDto.getNumberOfFins());
-        }
-        if (fish.getSpecies() != null) {
-            fish.setSpecies(Species.valueOf(fishUpdateDto.getSpecies()));
-        }
-        if (fishUpdateDto.getColor() != null) {
-            fish.setColor(fishUpdateDto.getColor());
-        }
+
+        Aquarium aquarium = aquariumService.findBy(fishUpdateDto.getAquariumId());
 
         for (Predicate<Aquarium> aquariumPredicate : filterChain.getPredicateList(fish)) {
-            if (!aquariumPredicate.test(aquarium))
-                throw new RuntimeException("The aquarium is not proper for this fish.");
+            if (!aquariumPredicate.test(aquarium)) {
+                throw new RuntimeException("The aquarium is not proper for this fish. " + ((BaseFilter) aquariumPredicate).getErrorMessage());
+            }
         }
-        fish.setAquarium(aquarium);
+
+        previousAquarium.removeFish(fish);
+        aquarium.addFish(fish);
         return fishRepository.save(fish);
     }
-
 
     private Fish convertFish(@Valid FishCreateDto fishCreateDto) {
         Fish fish = new Fish();
@@ -81,13 +73,4 @@ public class FishService {
         return fishRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Fish not found"));
     }
-
-    public Iterable<Fish> findByAquarium(Integer aquariumId) {
-        Iterable<Fish> byAquariumId = fishRepository.findByAquariumId(aquariumId);
-        if (!byAquariumId.iterator().hasNext()) {
-            throw new RuntimeException("Fish not found");
-        }
-        return byAquariumId;
-    }
-
 }
