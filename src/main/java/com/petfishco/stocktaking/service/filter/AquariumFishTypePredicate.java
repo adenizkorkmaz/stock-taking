@@ -2,17 +2,10 @@ package com.petfishco.stocktaking.service.filter;
 
 import com.petfishco.stocktaking.model.Aquarium;
 import com.petfishco.stocktaking.model.Species;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-
-import java.util.Locale;
 
 @Service
 public class AquariumFishTypePredicate extends BaseFilter {
-
-    public AquariumFishTypePredicate(MessageSource messageSource) {
-        super(messageSource);
-    }
 
     @Override
     public boolean test(Aquarium aquarium) {
@@ -34,6 +27,6 @@ public class AquariumFishTypePredicate extends BaseFilter {
 
     @Override
     public String getErrorMessage() {
-        return getMessageSource().getMessage("filter.message.fishType", null, Locale.getDefault());
+        return "filter.message.fishType";
     }
 }

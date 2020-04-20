@@ -11,10 +11,12 @@ import com.petfishco.stocktaking.service.filter.BaseFilter;
 import com.petfishco.stocktaking.service.filter.FilterChain;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
@@ -25,6 +27,7 @@ public class FishService {
     private final AquariumService aquariumService;
     private final FishRepository fishRepository;
     private final FilterChain filterChain;
+    private final MessageSource messageSource;
 
     @Transactional
     public Fish create(@Valid FishCreateDto fishCreateDto) {
@@ -56,7 +59,7 @@ public class FishService {
         for (Predicate<Aquarium> aquariumPredicate : filterChain.getPredicateList(fish)) {
             if (!aquariumPredicate.test(aquarium)) {
                 log.error("Fish cannot be updated." + ((BaseFilter) aquariumPredicate).getErrorMessage());
-                throw new BadRequestException(((BaseFilter) aquariumPredicate).getErrorMessage());
+                throw new BadRequestException(getErrorMessage((BaseFilter) aquariumPredicate));
             }
         }
 
@@ -67,9 +70,12 @@ public class FishService {
         return save;
     }
 
-
     public Fish findBy(Integer id) {
         return fishRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("error.message.fishNotFound", id));
+    }
+
+    private String getErrorMessage(BaseFilter aquariumPredicate) {
+        return messageSource.getMessage(aquariumPredicate.getErrorMessage(), null, Locale.getDefault());
     }
 }

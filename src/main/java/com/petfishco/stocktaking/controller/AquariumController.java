@@ -3,7 +3,6 @@ package com.petfishco.stocktaking.controller;
 import com.petfishco.stocktaking.assembler.AquariumDtoAssembler;
 import com.petfishco.stocktaking.model.Aquarium;
 import com.petfishco.stocktaking.model.dto.AquariumResponseDto;
-import com.petfishco.stocktaking.model.dto.FishResponseDto;
 import com.petfishco.stocktaking.service.AquariumService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
