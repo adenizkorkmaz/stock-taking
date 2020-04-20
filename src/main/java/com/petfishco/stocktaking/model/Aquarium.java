@@ -18,7 +18,7 @@ public class Aquarium {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
-    private int size;
+    private double size;
 
     @Enumerated(value = EnumType.STRING)
     private GlassType glassType;

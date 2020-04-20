@@ -1,12 +1,14 @@
 package com.petfishco.stocktaking.model.dto;
 
 import com.petfishco.stocktaking.model.Species;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FishResponseDto extends RepresentationModel<FishResponseDto> {
 
     private Integer id;

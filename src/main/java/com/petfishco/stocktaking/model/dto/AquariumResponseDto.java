@@ -1,6 +1,7 @@
 package com.petfishco.stocktaking.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.petfishco.stocktaking.model.AquariumSizeType;
 import com.petfishco.stocktaking.model.GlassType;
 import com.petfishco.stocktaking.model.Shape;
 import lombok.Data;
@@ -16,7 +17,9 @@ public class AquariumResponseDto extends RepresentationModel<AquariumResponseDto
 
     private Integer id;
 
-    private int size;
+    private double size;
+
+    private AquariumSizeType aquariumSizeType;
 
     private GlassType glassType;
 

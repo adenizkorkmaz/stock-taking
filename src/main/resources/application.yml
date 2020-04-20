@@ -1,3 +1,8 @@
+app:
+  aquarium:
+    size:
+      type: ${AQUARIUM_SIZE_TYPE:LITER}
+
 spring:
   hateoas:
     use-hal-as-default-json-media-type: false
