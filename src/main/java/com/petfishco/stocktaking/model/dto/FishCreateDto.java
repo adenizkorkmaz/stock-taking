@@ -2,13 +2,17 @@ package com.petfishco.stocktaking.model.dto;
 
 import com.petfishco.stocktaking.model.Species;
 import com.petfishco.stocktaking.validator.ValueOfEnum;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class FishCreateDto {
 
     @NotNull

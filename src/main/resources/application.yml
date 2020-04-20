@@ -8,7 +8,7 @@ spring:
     use-hal-as-default-json-media-type: false
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   h2:
     console:
       enabled: true
