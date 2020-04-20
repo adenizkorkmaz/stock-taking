@@ -14,7 +14,7 @@ You can see the initial insert script in the file : `resources/data.sql`
 
 * If you want to use `GALLON` as aquarium size unit, 
 you need to set environment variable in the docker-compose.yml file like: `- AQUARIUM_SIZE_TYPE=GALLON`
-By default, it is `LITER`.
+By default, it is `LITER`. By changing this unit, you can see aquarium size as `GALLON` in response. 
 
 * After running application you can click below links to see API related documentation:
 
