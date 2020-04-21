@@ -10,5 +10,5 @@ services:
       - "1212:1212"
     environment:
       - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:1212"
-      - AQUARIUM_SIZE_TYPE=GALLON
+      - AQUARIUM_SIZE_TYPE=LITER
     command: /bin/bash -c "java -jar /app.jar"
